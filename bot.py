@@ -1,19 +1,24 @@
-from telegram.ext import Updater, CommandHandler, MessageHandler, filters
+from telegram import Update
+from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 from config import BOT_TOKEN
 
-def start(update, context):
-    update.message.reply_text('¡Hola! Soy un bot de eco.')
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text('¡Hola! Soy un bot de eco.')
 
-def echo(update, context):
-    update.message.reply_text(update.message.text)
+async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(update.message.text)
 
 def main():
-    updater = Updater(BOT_TOKEN, use_context=True)
-    dp = updater.dispatcher
-    dp.add_handler(CommandHandler('start', start))
-    dp.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
-    updater.start_polling()
-    updater.idle()
+    # Crear la aplicación con el token del bot
+    application = Application.builder().token(BOT_TOKEN).build()
+
+    # Agregar los manejadores
+    application.add_handler(CommandHandler('start', start))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
+
+    # Iniciar el bot
+    application.run_polling()
 
 if __name__ == '__main__':
     main()
+
